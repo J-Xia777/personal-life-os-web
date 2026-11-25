@@ -55,6 +55,9 @@ export function parseSnapshot(text){
       }
     }
   }
+  for(const v of doc.state.visions){
+    if(v.stages!=null&&(!Array.isArray(v.stages)||v.stages.some(st=>!st||typeof st.id!=='string'||typeof st.title!=='string'||(st.targetDate!=null&&typeof st.targetDate!=='string'))))throw Error('愿景的阶段成果格式异常。');
+  }
   if(Object.hasOwn(doc.state,'__proto__'))throw Error('工作区格式异常。');
   if(doc.state.projects.some(p=>!['active','paused','future','done'].includes(p.status)))throw Error('事业项目状态无效。');
   const siji=doc.state.sijiSnapshot;

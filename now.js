@@ -1,3 +1,5 @@
+import {renderDay} from './daily-plan.js';
+import {dayGroups} from './daily-model.js';
 import {renderMap} from './life-map.js';
 import {today,readState,updateState,uid,esc,storageWarning,storageKey} from './store.js';
 import {icon} from './icons.js';
@@ -27,7 +29,9 @@ function followup(s,e){
   return '<section class="after"><div class="saved">'+icon('check',16)+' 已记下</div><p class="excerpt">'+esc(e.body)+'</p>'+plan+
     (replyId===e.id?'<form id="reply"><label for="answer">'+esc(question)+'</label><textarea id="answer" rows="2" placeholder="再写一句…">'+esc(replies.get(e.id)||'')+'</textarea><button class="ink">存入这条记录</button> <button type="button" data-dismiss>收起</button></form>':'<button class="reflect" data-reflect>'+icon('journal',16)+' 接着想一想</button>')+echo+'</section>';
 }
+let renderedDate='';
 function render(){
+  renderedDate=today();
   const recall=location.hash==='#recall';
   const map=location.hash==='#ideals'||location.hash==='#map'||location.hash.startsWith('#map/');
   const state=readState(),items=mine(state),e=items.find(n=>n.id===latest);
@@ -35,6 +39,7 @@ function render(){
     if(a.hash===(map?'#map':recall?'#recall':'#write'))a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
   }
   const error=storageWarning();
+  if(location.hash==='#day'){renderDay(page,state,render);return;}
   if(map){renderMap(page,state,items,row,render);return;}
   if(recall){
     page.innerHTML='<div class="date">我的记录</div><h1>回看</h1><input id="search" type="search" aria-label="搜索我的记录" placeholder="找一句话、一个人、一件事…" value="'+esc(query)+'"><div id="results"></div><div role="alert">'+esc(error)+'</div>';
@@ -47,10 +52,10 @@ function render(){
   }
   const date=new Date();
   const day=date.toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'long'});
-  const pending=state.tasks.filter(t=>t.source!=='demo'&&!t.archivedAt&&!t.done&&t.date===today()).sort((a,b)=>Number(b.priority==='main')-Number(a.priority==='main'))[0];
+  const groups=dayGroups(state),pending=groups.main[0]||groups.side[0];
   const recent=items.filter(x=>x.id!==latest).slice(0,3);
   page.innerHTML='<div class="date"><span></span>'+esc(day)+'</div><h1>此刻，想记下什么？</h1><form id="capture"><label class="sr" for="note">随手记</label><textarea id="note" rows="4" placeholder="'+esc(cue<0?'想到哪儿，就写到哪儿…':prompts[cue])+'">'+esc(draft)+'</textarea><div class="compose-foot"><button type="button" data-cue>'+icon('bulb',16)+' 给我一个开头</button><button class="ink" type="submit">记下 '+icon('arrow-right',16)+'</button></div></form><p role="status" id="msg">'+esc(message||error)+'</p>'+
-    followup(state,e)+(pending?'<section class="single"><h2>今天的一件事</h2><button class="task" data-done="'+esc(pending.id)+'" aria-label="完成 '+esc(pending.title)+'">○ <span>'+esc(pending.title)+'</span></button></section>':'')+(recent.length?'<section class="single"><h2>最近写下</h2>'+recent.map(row).join('')+'</section>':'');
+    followup(state,e)+'<section class="single"><h2><a class="map-day" href="#day">今日行动 '+icon('arrow-right',15)+'</a></h2>'+(pending?'<button class="task" data-done="'+esc(pending.id)+'" aria-label="完成 '+esc(pending.title)+'">○ <span>'+esc(pending.title)+'</span></button>':'<a class="soft" href="#day">'+(groups.done.length?'已完成 '+groups.done.length+' 项行动':'选一件今天值得做的事')+'</a>')+'</section>'+(recent.length?'<section class="single"><h2>最近写下</h2>'+recent.map(row).join('')+'</section>':'');
   const note=page.querySelector('#note');
   const notice=text=>{message=text;page.querySelector('#msg').textContent=text;};
   const save=(change,done)=>{try{updateState(change);}catch(err){notice(err.name==='QuotaExceededError'?'设备空间不足，这段文字仍在输入框中。':err.message);return;}done();render();};
@@ -72,6 +77,12 @@ function render(){
   }
   const done=page.querySelector('[data-done]');if(done)done.onclick=()=>save(s=>{const t=s.tasks.find(t=>t.id===done.dataset.done&&!t.archivedAt);if(t)t.done=true;},()=>{message='这件事完成了。';});
 }
+function refreshDay(){
+  if(!document.hidden&&renderedDate!==today()&&!document.activeElement?.matches('input,textarea,select')&&!document.querySelector('dialog[open]'))render();
+}
+window.addEventListener('focus',refreshDay);
+document.addEventListener('visibilitychange',refreshDay);
+setInterval(refreshDay,60000);
 window.addEventListener('hashchange',()=>{message='';render();window.scrollTo(0,0);});
 window.addEventListener('storage',e=>{if(e.key===storageKey&&!page.contains(document.activeElement))render();});
 render();

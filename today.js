@@ -1,3 +1,4 @@
+import {mainCount} from './daily-model.js';
 import { dailySummary, sijiURL } from './siji.js';
 import { rememberRevision } from './store.js';
 const colors = {'p-tea':['tea','sage'],'p-music':['music','lilac'],'p-x':['globe','blue'],'p-red':['pen','peach'],'p-ai':['sparkles','sage'],'p-vibe':['monitor','blue']};
@@ -60,7 +61,7 @@ export function renderToday(c) {
     <p>先主线，再副线。白天执行，晚上思考。</p>
     <div class="day-progress"><span>今日进度</span><progress max="${Math.max(1,tasks.length)}" value="${done}" aria-label="今日任务完成进度"></progress><b>${done} / ${tasks.length}</b></div>
     </div></header>
-    <div class="work-grid">${todayTasks(c,tasks)}${habits(c)}${schedule(c,tasks)}${siji(c)}</div>
+    <p><a class="text-btn" href="./now.html#day">查看我的今日行动 ↗</a></p><div class="work-grid">${todayTasks(c,tasks)}${habits(c)}${schedule(c,tasks)}${siji(c)}</div>
     <div class="review-strip"><span class="icon-tile">${c.icon('moon',20)}</span><div><strong>晚间复盘</strong><small>留下一件成果，记住今天的收获。</small></div><button class="btn" data-go="review">写复盘</button></div>
     </section>`;
 }
@@ -75,7 +76,7 @@ export function editTask(c,id='',projectId=''){
   const task=c.state.tasks.find(t=>t.id===id);
   if(id&&!task)return;
   const date=task?.date||c.today();
-  const atLimit=c.state.tasks.filter(t=>!t.archivedAt&&t.date===date&&t.priority==='main').length>=3;
+  const atLimit=mainCount(c.state,date)>=3;
   const priority=task?.priority||(atLimit?'side':'main');
   c.modal(task?'编辑任务':'新增任务',`<form class="edit-form"><label class="field">任务名称<input name="title" value="${c.esc(task?.title)}" required maxlength="160" placeholder="具体要完成什么？"></label>
     <label class="field">任务优先级<select name="priority"><option value="main" ${priority==='main'?'selected':''}>主线任务（每天最多 3 项）</option><option value="side" ${priority==='side'?'selected':''}>次要任务</option></select></label>
@@ -87,7 +88,7 @@ export function editTask(c,id='',projectId=''){
       e.preventDefault();const obj=Object.fromEntries(new FormData(form));obj.title=obj.title.trim();
       if(!obj.title){form.querySelector('[data-err]').textContent='请输入任务名称。';return;}
       const saved=c.save(s=>{
-        if(obj.priority==='main'&&s.tasks.filter(t=>!t.archivedAt&&t.id!==id&&t.date===obj.date&&t.priority==='main').length>=3)throw Error('这一天已有 3 项主线任务，请选次要任务或调整日期。');
+        if(obj.priority==='main'&&mainCount(s,obj.date,id)>=3)throw Error('这一天已有 3 项主线任务，请选次要任务或调整日期。');
         const live=s.tasks.find(t=>t.id===id);
         if(id&&!live)throw Error('这项任务已发生变化，请重新打开。');
         if(live){rememberRevision(live);Object.assign(live,obj,{basedOnDemo:live.basedOnDemo||live.source==='demo',source:'user'});}

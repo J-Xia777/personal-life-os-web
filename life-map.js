@@ -3,6 +3,7 @@ import {icon} from './icons.js';
 import {reviseLibraryItem} from './library.js';
 import {withOriginal,revise} from './atlas.js';
 import {writeNote} from './now-model.js';
+import {addAction,addStage,mainCount,personal,finishStage} from './daily-model.js';
 
 // The first three levels describe a domain, a direction and a module.
 // The text after each module name is an optional starting question.
@@ -84,23 +85,27 @@ function idealForm(areas,v){
   return '<form data-ideal="'+esc(v?.id||'')+'"><label>我想过怎样的生活？<textarea name="vision" rows="2" maxlength="250" required>'+esc(v?.title||'')+'</textarea></label><fieldset><legend>与哪些领域有关（可多选）</legend>'+boxes+'</fieldset><button class="ink">保存愿景</button></form>';
 }
 function nextStep(state,vision){
-  const tasks=state.tasks.filter(t=>t.visionId===vision.id&&!t.done&&!t.archivedAt);
-  const goals=state.goals.filter(g=>g.visionId===vision.id);
-  const current=tasks.map(t=>'<li><a href="./#tasks?scope=all">'+esc(t.date)+' · '+esc(t.title)+'</a></li>').join('');
+  const tasks=state.tasks.filter(t=>personal(t)&&t.visionId===vision.id&&!t.done);
+  const goals=state.goals.filter(g=>g.visionId===vision.id&&personal(g));
+  const stages=vision.stages||[],active=stages.filter(st=>!st.done);
+  const id=esc(vision.id);
   return (goals.length?'<p>长期目标 · '+goals.map(g=>esc(g.title)).join('、')+'</p>':'')+
-    (tasks.length?'<ul>'+current+'</ul>':'')+
-    '<details><summary>为这个愿景安排一步行动</summary><form data-step="'+esc(vision.id)+'"><label>我愿意先做什么？<input name="title" maxlength="160" required></label><label>哪一天做？<input name="day" type="date" value="'+today()+'" required></label><button class="ink">加入任务</button></form></details>';
+    (stages.length?'<ul class="stage-list">'+stages.map(st=>'<li><form data-stage-check="'+id+'"><input type="hidden" name="stage" value="'+esc(st.id)+'"><button name="done" value="'+(st.done?'no':'yes')+'" aria-pressed="'+!!st.done+'" aria-label="'+(st.done?'重新开启 ':'确认达成 ')+esc(st.title)+'">'+(st.done?'✓':'○')+' '+esc(st.title)+'</button></form><small>'+esc(st.done?'已达成':st.targetDate?'计划 '+st.targetDate+' 达成':'阶段成果')+'</small></li>').join('')+'</ul>':'')+
+    '<details><summary>设定阶段成果</summary><form data-stage="'+id+'"><label>怎样才算完成这个阶段？<input name="title" maxlength="160" required placeholder="写下一个能看见的结果"></label><label>希望何时达成（可选）<input type="date" name="target"></label><button class="ink">保存阶段成果</button></form></details>'+
+    (tasks.length?'<ul>'+tasks.map(t=>'<li><a href="#day">'+esc(t.date)+' · '+esc(t.title)+'</a></li>').join('')+'</ul>':'')+
+    '<details><summary>安排下一步行动</summary><form data-step="'+id+'"><label>具体做什么？<input name="title" maxlength="160" required></label>'+
+    (active.length?'<label>推进哪个阶段？<select name="stage"><option value="">直接关联愿景</option>'+active.map((st,i)=>'<option value="'+esc(st.id)+'" '+(i===0?'selected':'')+'>'+esc(st.title)+'</option>').join('')+'</select></label>':'')+
+    '<label>哪一天做？<input name="day" type="date" value="'+today()+'" required></label><label>优先级<select name="priority"><option value="main">主线行动</option><option value="side" '+(mainCount(state,today())>=3?'selected':'')+'>其他行动</option></select></label><button class="ink">保存行动</button></form></details>';
 }
 export function addStep(state,visionId,title,date){
-  if(!state.visions.some(v=>v.id===visionId)||!title.trim()||!/^\d{4}-\d{2}-\d{2}$/.test(date))throw Error('请填写行动和日期。');
-  state.tasks.push({id:uid(),title:title.trim(),visionId,date,priority:'side',source:'user',projectId:'',time:'',done:false,originalText:title,revisions:[]});
+  return addAction(state,{visionId,title,date});
 }
 function showIdeals(state,nodes){
   const areas=children(nodes,[]),items=ideals(state);
   return ancestry(['人生理想与方向'])+'<h1>人生理想与方向</h1><p class="muted">想象一个你愿意反复度过的普通日子：在哪里，和谁在一起，把时间花在什么事上？</p>'+
     items.map(v=>'<article class="map-ideal"><h2>'+esc(v.title)+'</h2>'+(v.description?'<p>'+esc(v.description)+'</p>':'')+
       '<div class="map-tags">'+(Array.isArray(v.lifeAreas)?v.lifeAreas:[]).map(n=>'<a href="'+esc(href([n]))+'">'+esc(n)+' ↗</a>').join('')+'</div>'+nextStep(state,v)+'<details><summary>编辑方向与关联</summary>'+idealForm(areas,v)+'</details></article>').join('')+
-    (items.length?'<details><summary>再写一个愿景</summary>'+idealForm(areas)+'</details>':idealForm(areas))+'<p><a class="soft" href="./#vision?section=route">查看长期目标与人生路线 ↗</a></p>';
+    (items.length?'<details><summary>再写一个愿景</summary>'+idealForm(areas)+'</details>':idealForm(areas))+'<p><a class="map-day" href="#day">查看今日行动 →</a></p><p><a class="soft" href="./#vision?section=route">查看长期目标与人生路线 ↗</a></p>';
 }
 const toolsByDirection=new Map([['创业与经营',['创业实验室','startup']],['旅行',['旅行与探索','explore']],['音乐创作',['事业项目','projects']],['阅读与研究',['知识中心','knowledge']],['个人财务',['四记汇总','guide']]]);
 export function renderMap(page,state,items,row,render){
@@ -116,6 +121,7 @@ export function renderMap(page,state,items,row,render){
     const direction=path.length?visions.filter(v=>Array.isArray(v.lifeAreas)&&v.lifeAreas.includes(path[0])):visions;
     html=(path.length?ancestry(path):'')+'<h1>'+esc(name)+'</h1>';
     if(!path.length||direction.length)html+='<a class="north" href="#ideals">'+icon('compass',24)+'<span><b>人生理想与方向</b><small>'+esc(direction[0]?.title||'我想过怎样的生活？')+'</small></span>'+icon('chevron-right',16)+'</a>';
+    if(!path.length)html+='<a class="map-day" href="#day">今日行动 '+icon('arrow-right',16)+'</a>';
     if(path.length<3){
       html+='<div class="branches">'+next.map(n=>{
         const sub=children(nodes,n.path).slice(0,3).map(x=>x.path.at(-1)).join(' · ');
@@ -127,6 +133,7 @@ export function renderMap(page,state,items,row,render){
       const attached=items.filter(e=>Array.isArray(e.lifeTopics)&&e.lifeTopics.includes(key(path)));
       const rest=items.filter(e=>!attached.includes(e));
       html+='<form class="map-write" data-entry><label>'+esc(nodes.get(key(path)).question||'关于这件事，你想留下什么？')+'<textarea rows="3" name="body" required placeholder="写下问题、经验或一段回忆…"></textarea></label><button class="ink">记在这里</button></form>';
+      html+='<details><summary>为这个领域安排一个行动</summary><form data-area-action><label>具体做什么？<input name="title" maxlength="160" required></label><label>哪一天做？<input name="date" type="date" value="'+today()+'" required></label><label>优先级<select name="priority"><option value="side">其他行动</option><option value="main">主线行动</option></select></label><button class="ink">保存行动</button></form><a class="soft" href="#day">查看今日行动 ↗</a></details>';
       if(rest.length)html+='<details><summary>关联已有记录</summary><form data-attach><label>选择记录<select name="id">'+rest.map(e=>'<option value="'+esc(e.id)+'">'+esc(e.date)+' · '+esc(e.title)+'</option>').join('')+'</select></label><button class="ink">关联到这里</button></form></details>';
       if(attached.length)html+='<section class="single"><h2>这里的记录</h2>'+attached.map(row).join('')+'</section>';
     }
@@ -138,7 +145,10 @@ export function renderMap(page,state,items,row,render){
     try{
       updateState(s=>{
         if(form.hasAttribute('data-ideal'))saveIdeal(s,fields,ideals(state).find(v=>v.id===form.dataset.ideal));
-        if(form.hasAttribute('data-step'))addStep(s,form.dataset.step,fields.get('title'),fields.get('day'));
+        if(form.hasAttribute('data-stage'))addStage(s,form.dataset.stage,fields.get('title'),fields.get('target'));
+        if(form.hasAttribute('data-stage-check'))finishStage(s,form.dataset.stageCheck,fields.get('stage'),form.querySelector('button').value==='yes');
+        if(form.hasAttribute('data-step'))addAction(s,{visionId:form.dataset.step,title:fields.get('title'),date:fields.get('day'),stageId:fields.get('stage')||'',priority:fields.get('priority')});
+        if(form.hasAttribute('data-area-action'))addAction(s,{lifeArea:path[0],title:fields.get('title'),date:fields.get('date'),priority:fields.get('priority')});
         if(form.hasAttribute('data-branch'))destination=href(addBranch(s,path,fields.get('label')));
         if(form.hasAttribute('data-attach'))attachEntry(s,fields.get('id'),path);
         if(form.hasAttribute('data-entry')){
