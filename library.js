@@ -242,7 +242,7 @@ export async function readMedia(id) {
     req.onerror=()=>reject(req.error);
   });
 }
-function versions(old,fields) {
+export function reviseLibraryItem(old,fields) {
   const {revisions,...snapshot}=old||{};
   const time=new Date().toISOString();
   return {
@@ -294,7 +294,7 @@ function editor(ctx,kind,previous,category) {
           const latest=s[collection][index];
           if(previous&&(!latest||latest.updatedAt!==previous.updatedAt))throw Error('此条记录已在其他窗口更新，请重新打开后编辑。');
           if(kind==='note'&&latest)data.starred=latest.starred;
-          const next=versions(latest,data);
+          const next=reviseLibraryItem(latest,data);
           if(index===-1)s[collection].unshift(next);
           else s[collection][index]=next;
         });

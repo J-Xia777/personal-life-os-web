@@ -35,7 +35,7 @@ function nav(key,short=''){
  return '<a href="#'+key+'" '+(active?'aria-current="page"':'')+'>'+icon(glyph,20)+'<span>'+(short||label)+'</span></a>';
 }
 function morePage(){
- return '<div class="page-head"><h1>更多</h1></div><div class="panel more-links">'+Object.keys(pages).filter(k=>k!=='more').map(k=>nav(k)).join('')+'</div>';
+ return '<div class="page-head"><h1>更多</h1></div><div class="panel more-links"><a href="./now.html">随手记 · 轻量预览</a>'+Object.keys(pages).filter(k=>k!=='more').map(k=>nav(k)).join('')+'</div>';
 }
 function render(){
  const [key,query]=location.hash.slice(1).split('?');const route=Object.hasOwn(pages,key)?key:'today';
