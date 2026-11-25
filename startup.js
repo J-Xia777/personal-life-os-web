@@ -37,7 +37,7 @@ function overview(c){
  const risks=rs.filter(r=>r.kind==='risk'&&r.status!=='已关闭'&&ids.has(r.projectId));
  const steps=active.filter(p=>p.startup?.next);
  const total=rs.filter(r=>r.kind==='experiment').length;
- const hero='<header class="lab-hero"><div><div class="lab-wordmark">'+c.icon('activity',17)+' STARTUP LAB</div><h1>创业实验室</h1><p>从一个真实问题开始，用小实验决定下一步投入。</p><div class="lab-hero-actions">'+act('new','记录机会','idea','btn')+act('new','设计实验','experiment','btn')+'</div></div><div class="lab-orbit" aria-hidden="true"><i></i><b></b><span></span></div></header>';
+ const hero='<header class="lab-hero"><div><div class="lab-wordmark">'+c.icon('lab',17)+' STARTUP LAB</div><h1>创业实验室</h1><p>从一个真实问题开始，用小实验决定下一步投入。</p><div class="lab-hero-actions">'+act('new','记录机会','idea','btn')+act('new','设计实验','experiment','btn')+'</div></div><div class="lab-orbit" aria-hidden="true"><i></i><b></b><span></span></div></header>';
  return hero+'<div class="lab-kpis">'+[['进行中项目',active.length,'项目'],['待验证假设',exp.length,'实验'],['本月营业收入',price(sum('revenue')),month],['本月净利润',price(sum('net')),'人民币']].map(([n,v,m])=>'<div><small>'+n+'</small><strong>'+v+'</strong><span>'+m+'</span></div>').join('')+'</div><div class="lab-grid">'+
  panel('创业项目',projectList(c,ps),link({tab:'projects'},'管理','text-btn'))+
  panel('下一步行动',steps.length?steps.map(p=>link({tab:'projects',p:p.id},'<strong>'+esc(p.startup.next)+'</strong><small>'+esc(p.title)+'</small>','lab-next')).join(''):week.length?tasksList(c,week.slice(0,1)):empty('在项目空间填写优先下一步，或安排一个实践任务。'))+

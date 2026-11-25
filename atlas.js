@@ -138,7 +138,7 @@ function projectList(ctx) {
   const rawFilter=ctx.params.get('status'), selected=Object.hasOwn(statusLabels,rawFilter)?rawFilter:'all'
   const projects=ctx.state.projects.filter(p=>selected==='all'||p.status===selected)
   return '<div class="atlas">'+intro(ctx,'事业与项目','管理正在投入的事业，也给暂停和未来的计划留一个位置。',viewButton(ctx,'新增项目','new-project'))+
-    '<a class="lab-atlas-link" href="#startup">'+ctx.icon('activity',17)+' 创业实验室</a>'+tabs(ctx,[['all','全部项目'],...Object.entries(statusLabels)],selected,'project-filter','项目状态')+
+    '<a class="lab-atlas-link" href="#startup">'+ctx.icon('lab',17)+' 创业实验室</a>'+tabs(ctx,[['all','全部项目'],...Object.entries(statusLabels)],selected,'project-filter','项目状态')+
     (projects.length?'<div class="at-project-grid">'+projects.map(p=>projectCard(ctx,p)).join('')+'</div>':empty(ctx,'当前状态下还没有项目。'))+'</div>'
 }
 function safeURL(s) {

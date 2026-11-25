@@ -157,7 +157,7 @@ function reviewSupplement(ctx,begin,end) {
 function assistant(ctx) {
   const scopes=[['book-open','知识整理','整理零散笔记，在获准的资料里查找出处。'],['compass','规划与取舍','围绕长期目标比较行动方案和项目优先级。'],['sparkles','经历与复盘','梳理已经发生的经历，提出可供选择的改进建议。']];
   return titleBlock('AI 人生助手','为未来的个人思考与规划预留空间。')+
-    '<section class="panel lib-ai-hero"><span class="lib-topic">'+ctx.icon('sparkles',26)+'</span><div><span class="lib-kicker">能力预览 · 尚未连接</span><h2>你决定哪些内容可以被读取</h2><p>当前版本只在本机保存内容。未来可按资料范围授权，每条建议由你决定是否采纳。</p></div></section><div class="lib-ai-grid">'+scopes.map(([icon,title,body])=>'<article class="panel lib-section"><span class="lib-topic">'+ctx.icon(icon,19)+'</span><h2>'+title+'</h2><p>'+body+'</p></article>').join('')+'</div><section class="panel lib-section"><h2>'+ctx.icon('lock',18)+' 数据权限</h2><p>私人日记和四记记录默认关闭外部访问。原始笔记、人生原则与重大决定始终保留由你管理。</p></section>';
+    '<section class="panel lib-ai-hero"><span class="lib-topic">'+ctx.icon('neural',26)+'</span><div><span class="lib-kicker">能力预览 · 尚未连接</span><h2>你决定哪些内容可以被读取</h2><p>当前版本只在本机保存内容。未来可按资料范围授权，每条建议由你决定是否采纳。</p></div></section><div class="lib-ai-grid">'+scopes.map(([icon,title,body])=>'<article class="panel lib-section"><span class="lib-topic">'+ctx.icon(icon,19)+'</span><h2>'+title+'</h2><p>'+body+'</p></article>').join('')+'</div><section class="panel lib-section"><h2>'+ctx.icon('lock',18)+' 数据权限</h2><p>私人日记和四记记录默认关闭外部访问。原始笔记、人生原则与重大决定始终保留由你管理。</p></section>';
 }
 export function renderLibrary(ctx) {
   const renderer={knowledge,explore,journal,review,ai:assistant}[ctx.route];

@@ -1,16 +1,24 @@
 // A small, local line icon set. Every glyph shares a 24-unit grid.
+const plane = d => '<path d="'+d+'" fill="currentColor" fill-opacity=".16" stroke="none"/>';
+const line = d => '<path d="'+d+'"/>';
+const accent = d => '<path d="'+d+'" class="ico-accent"/>';
+const node = (x,y,r=1.45) => '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" class="ico-node" fill="currentColor" stroke="none"/>';
+
 const paths = {
-  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/>',
-  compass:'<circle cx="12" cy="12" r="9"/><path d="m16 8-2.5 5.5L8 16l2.5-5.5L16 8Z"/>',
-  layers:'<path d="m3 8 9-5 9 5-9 5-9-5Zm0 4.5 9 5 9-5m-18 4.5 9 5 9-5"/>',
+  sun:plane('M2 16a10 10 0 0 1 20 0Z')+line('M3 16h18M5 20h14M5 12a7.5 7.5 0 0 1 14 0')+accent('M12 2v2m-9 3 1.6 1.2M21 7l-1.6 1.2'),
+  compass:plane('m17 6-3.1 8L6 18l3.6-8Z')+line('M10.5 3.2a9 9 0 1 0 10.3 10.4M17 6l-3.2 8-7.7 3.9 3.7-8Z')+node(19,4.8),
+  layers:plane('m2.5 8 9.5-5 9.5 5-9.5 5Z')+line('m2.5 8 9.5-5 9.5 5-9.5 5Z M3 12.8l9 4.8 9-4.8')+accent('m4.3 17.6 7.7 4 7.7-4'),
+  lab:plane('m7 14 10-1 4 6-2 2H5l-2-2Z')+line('M8.5 3h7m-6 0v6l-6 9.5a1.7 1.7 0 0 0 1.5 2.6h14a1.7 1.7 0 0 0 1.5-2.6l-6-9.5V3')+accent('m7.3 15 3-1.6 3.3 1.2 3.2-1.5')+node(13,10.6,.95),
+  neural:plane('m12 3 8 4.6v8.8L12 21l-8-4.6V7.6Z')+line('m12 3 8 4.6v8.8L12 21l-8-4.6V7.6Z')+accent('m8 9.6 4 2.4 4-2.4M12 12v4.8')+node(12,12,1.9),
+  'habit-loop':line('M4 10A8.2 8.2 0 0 1 18 6l2 2m0-4v4h-4M20 14A8.2 8.2 0 0 1 6 18l-2-2m0 4v-4h4')+node(12,12,1.8),
   folder:'<path d="M3 7V5a1 1 0 0 1 1-1h5l2 3h9a1 1 0 0 1 1 1v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/>',
-  book:'<path d="M12 6c-3-2-6-2.5-10-2v14c4-.5 7 0 10 2 3-2 6-2.5 10-2V4c-4-.5-7 0-10 2Zm0 0v14"/>',
-  map:'<path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Zm6-3v15m6-12v15"/>',
-  journal:'<rect x="5" y="3" width="15" height="18" rx="2"/><path d="M9 3v18m3-12h5m-5 4h3"/>',
-  chart:'<path d="M4 3v17h17M8 15l4-5 3 2 5-7"/>',
+  book:plane('m12 6 8.5-2v14L12 21Z')+line('M12 6 5.7 3.8H2.8v14.5h2.7L12 21l6.5-2.7h2.7V3.8h-2.9L12 6Zm0 0v15')+accent('m15.3 8.7 3-1'),
+  map:line('m3 6 5.8-2.6 6.2 2.8 6-2.8V18l-6 2.6-6.2-2.8L3 20.5Z M9 8v6m6-3v5')+node(15,7),
+  journal:plane('M5 3.5h4v17H5z')+line('M5 3.5h12l3 3v14H5Z M9 3.5v17')+accent('M12.5 10h4m-4 4H15'),
+  chart:plane('m4 17 5-5 4 2 7-9v14H4Z')+line('M3.5 4v16.5H21 M6 15l4-4 3 2 7-8')+node(20,5,1.7),
   sparkles:'<path d="m12 3 2.1 6.9L21 12l-6.9 2.1L12 21l-2.1-6.9L3 12l6.9-2.1L12 3Zm7-1 .7 2.3L22 5l-2.3.7L19 8l-.7-2.3L16 5l2.3-.7L19 2Z"/>',
   leaf:'<path d="M20 3C9 3 4 7 5 14c.5 4 4 6 8 4 5-2 7-7 7-15ZM3 21l12-12"/>',
-  target:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".9"/>',
+  target:line('M8.5 3.7H6L3.7 6v3m11.8-5.3H18L20.3 6v3M3.7 15v3L6 20.3h2.5m7 0H18l2.3-2.3v-3')+plane('m12 7 5 5-5 5-5-5Z')+accent('m12 8 4 4-4 4-4-4Z'),
   list:'<path d="M9 6h11M9 12h11M9 18h11M4 6h.1M4 12h.1M4 18h.1"/>',
   'list-checks':'<path d="m2.8 6 1.5 1.5L7 4.6M10 6h11M3 13l1.5 1.5L7 11.5M10 13h11M10 19h8"/>',
   check:'<path d="m5 12 4.5 4.5L19 7"/>',
@@ -22,11 +30,11 @@ const paths = {
   'arrow-left':'<path d="M20 12H4m6-6-6 6 6 6"/>',
   'arrow-up-right':'<path d="M6 18 18 6M7 6h11v11"/>',
   calendar:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v5m10-5v5M3 11h18"/>',
-  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/>',
-  pen:'<path d="m4 16-1 5 5-1L20 8l-4-4L4 16Zm10-10 4 4"/>',
+  clock:line('M17.2 4.4A9 9 0 1 0 20.7 10M12 6v6l4 2')+node(19.8,6.5),
+  pen:plane('m4 15.5 10.6-11 4.9 4.7-11 10.6-5 1Z')+line('m3.5 20.5 1-5L16 3.9a1.6 1.6 0 0 1 2.2 0l2 2a1.6 1.6 0 0 1 0 2.2L8.5 19.5Z M13.5 6.5l4 4'),
   feather:'<path d="m3 21 12-12m-5 8H6v-4L16 3c5-2 7 3 4 7l-6 7h-4Z"/>',
   edit:'<path d="M12 4H5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-7M10 14l-1 3 3-1 9-9-2-2-9 9Z"/>',
-  grid:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
+  grid:plane('m16.8 2.6 4.6 4.6-4.6 4.5-4.5-4.5Z')+line('M3.5 3.5h6.3v6.3H3.5z M3.5 14.2h6.3v6.3H3.5z M14.2 14.2h6.3v6.3h-6.3z')+accent('m16.8 2.6 4.6 4.6-4.6 4.5-4.5-4.5Z'),
   music:'<path d="M9 18V6l11-3v12M9 10l11-3"/><ellipse cx="6" cy="18" rx="3" ry="2.5"/><ellipse cx="17" cy="15" rx="3" ry="2.5"/>',
   tea:'<path d="M4 9h12v5a6 6 0 0 1-12 0V9Zm12 0h2a3 3 0 0 1 0 6h-2M3 21h16M7 3v3m4-4v3"/>',
   activity:'<path d="M2 12h5l3-8 4 16 3-8h5"/>',
@@ -43,7 +51,7 @@ const paths = {
   'external-link':'<path d="M13 4h7v7m-1-6L10 14M10 5H5v15h15v-6"/>',
   bookmark:'<path d="M6 3h12v18l-6-4-6 4V3Z"/>',star:'<path d="m12 2 3 7 7 1-5 5 1 7-6-4-6 4 1-7-5-5 7-1 3-7Z"/>',
   search:'<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',
-  shield:'<path d="M12 2c2 2 5 3 8 3v6c0 5-3 8-8 11-5-3-8-6-8-11V5c3 0 6-1 8-3Z"/><path d="m8 12 3 3 5-6"/>',
+  shield:plane('M12 2.7 20 6v6c0 4.3-3.5 7.4-8 9.5Z')+line('M12 2.7 20 6v6c0 4.3-3.5 7.4-8 9.5C7.5 19.4 4 16.3 4 12V6Z')+accent('m8.7 11.7 2.4 2.4 4.5-5'),
   lock:'<rect x="4.5" y="10" width="15" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3"/>',
   trash:'<path d="M4 7h16m-14 0 1 14h10l1-14M9 4h6m-5 7v6m4-6v6"/>',
   mountain:'<path d="m2 20 8-15 4 7 3-5 5 13H2Zm5-9 3 2 2-3"/>',
@@ -62,5 +70,5 @@ const paths = {
 };
 const alias = {'book-open':'book',notebook:'journal','notebook-pen':'journal',briefcase:'folder','folder-open':'folder','folder-kanban':'layers','chart-no-axes-combined':'chart','trending-up':'chart','bar-chart-3':'chart', 'layout-grid':'grid','circle-check':'check','square-pen':'edit','pencil':'pen','pencil-line':'pen','check-square':'list-checks','calendar-days':'calendar','calendar-check':'calendar','lightbulb':'bulb','heart-handshake':'hand','heart-hand':'hand','hand-heart':'hand','coffee':'tea','coins':'wallet','utensils':'apple','dumbbell':'activity','footprints':'activity','timer':'clock','map-pinned':'map-pin','map-pin-house':'map-pin','sparkle':'sparkles','milestone':'flag','telescope':'compass','brain':'bulb','library':'book','sticky-note':'file-text','scroll-text':'file-text','trash-2':'trash','settings':'sliders','flower-2':'sprout','panels-top-left':'grid','palette':'image','music-2':'music','piano':'music','code':'monitor','code-2':'monitor','mountain-snow':'mountain','notebook-tabs':'journal','navigation':'compass','menu':'list','ellipsis':'more','badge-check':'shield','shield-check':'shield','tag':'bookmark','plus-circle':'plus','check-circle-2':'check','book-marked':'book','flame-kindling':'flame'};
 export function icon(name, size=20) {
-  return '<svg class="ico" width="'+Number(size)+'" height="'+Number(size)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(paths[name]||paths[alias[name]]||paths.circle)+'</svg>';
+  return '<svg class="ico" width="'+Number(size)+'" height="'+Number(size)+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+(paths[name]||paths[alias[name]]||paths.circle)+'</svg>';
 }

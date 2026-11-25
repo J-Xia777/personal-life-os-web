@@ -31,7 +31,7 @@ function habits(c,manage=false) {
   const all=c.state.habits.filter(h=>!h.archivedAt);
   const day=c.today();
   const done=all.filter(h=>h.checks?.[day]).length;
-  return `<article class="panel work-card habit-card"><div class="card-head"><h2><span class="head-icon">${c.icon('sprout')}</span>每日习惯</h2>
+  return `<article class="panel work-card habit-card"><div class="card-head"><h2><span class="head-icon">${c.icon('habit-loop')}</span>每日习惯</h2>
   <span class="count-meta"><b>${done}</b> / ${all.length}</span></div>
   <div class="habit-rows">${all.map(h=>{const checked=h.checks?.[day];return `<div class="habit-row"><span class="habit-icon ${c.esc(h.tone)}">${c.icon(h.glyph,20)}</span><div class="habit-copy"><span>${c.esc(h.title)}</span><small>${c.esc(h.minimum)}${manage?' · '+origin(h):''}</small></div>
   <button class="habit-check ${checked?'checked':''}" data-habit="${c.esc(h.id)}" aria-label="${c.esc(h.title)}：${checked?'已打卡':'打卡'}" aria-pressed="${!!checked}">${c.icon(checked?'check':'plus',15)}<span>${checked?(checked==='minute'?'一分钟':'已打卡'):'打卡'}</span></button></div>`}).join('')||'<p class="empty">添加一个可以从一分钟开始的习惯。</p>'}</div>
