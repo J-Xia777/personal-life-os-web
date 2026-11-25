@@ -1,3 +1,4 @@
+import {renderMap} from './life-map.js';
 import {today,readState,updateState,uid,esc,storageWarning,storageKey} from './store.js';
 import {icon} from './icons.js';
 import {writeNote,replyToNote,arrangeNote,questionFor,datedAction,changeBody,relatedNote} from './now-model.js';
@@ -28,11 +29,13 @@ function followup(s,e){
 }
 function render(){
   const recall=location.hash==='#recall';
+  const map=location.hash==='#ideals'||location.hash==='#map'||location.hash.startsWith('#map/');
   const state=readState(),items=mine(state),e=items.find(n=>n.id===latest);
   for(const a of document.querySelectorAll('nav a')){
-    if(a.hash===(recall?'#recall':'#write'))a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
+    if(a.hash===(map?'#map':recall?'#recall':'#write'))a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
   }
   const error=storageWarning();
+  if(map){renderMap(page,state,items,row,render);return;}
   if(recall){
     page.innerHTML='<div class="date">我的记录</div><h1>回看</h1><input id="search" type="search" aria-label="搜索我的记录" placeholder="找一句话、一个人、一件事…" value="'+esc(query)+'"><div id="results"></div><div role="alert">'+esc(error)+'</div>';
     function results(){

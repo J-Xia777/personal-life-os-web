@@ -24,7 +24,7 @@ const projectSections = [
 ]
 const artwork = {valley:'山野', studio:'唱片', library:'书房'}
 const sourceLabel = item => item.source === 'demo' ? (item.editedBy === 'user' ? '演示·已编辑' : '演示') : '个人'
-const withOriginal = (data, date) => ({...data, createdAt:date, updatedAt:date, original:JSON.stringify(data), revisions:[]})
+export const withOriginal = (data, date) => ({...data, createdAt:date, updatedAt:date, original:JSON.stringify(data), revisions:[]})
 
 export function atlasSeed(date) {
   const visions = [
@@ -60,7 +60,7 @@ export function atlasSeed(date) {
   return {visions,goals,projects,atlasNotes:notes}
 }
 
-function revise(item,changes) {
+export function revise(item,changes) {
   const date = new Date().toISOString()
   const {revisions,original,...previous} = item
   return {...item,...changes,original:original ?? JSON.stringify(previous),editedBy:'user',updatedAt:date,
