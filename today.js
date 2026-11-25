@@ -71,7 +71,7 @@ export function renderTasks(c){
   <div class="work-grid"><article class="panel work-card"><div class="card-head"><h2>任务清单</h2><div class="seg"><button data-scope="today" aria-pressed="${scope==='today'}">今日</button><button data-scope="all" aria-pressed="${scope==='all'}">全部</button></div></div>
   ${['main','side'].map(p=>`<h3 class="list-label">${p==='main'?'主线任务':'次要任务'}</h3><ul class="task-list">${tasks.filter(t=>t.priority===p).map(t=>taskRow(c,t,true)).join('')||'<li class="empty">暂无任务</li>'}</ul>`).join('')}</article>${habits(c,true)}</div>`;
 }
-export function editTask(c,id=''){
+export function editTask(c,id='',projectId=''){
   const task=c.state.tasks.find(t=>t.id===id);
   if(id&&!task)return;
   const date=task?.date||c.today();
@@ -80,7 +80,7 @@ export function editTask(c,id=''){
   c.modal(task?'编辑任务':'新增任务',`<form class="edit-form"><label class="field">任务名称<input name="title" value="${c.esc(task?.title)}" required maxlength="160" placeholder="具体要完成什么？"></label>
     <label class="field">任务优先级<select name="priority"><option value="main" ${priority==='main'?'selected':''}>主线任务（每天最多 3 项）</option><option value="side" ${priority==='side'?'selected':''}>次要任务</option></select></label>
     <div class="form-split"><label class="field">日期<input type="date" name="date" required value="${c.esc(date)}"></label><label class="field">时间（选填）<input type="time" name="time" value="${c.esc(task?.time)}"></label></div>
-    <label class="field">关联项目<select name="projectId"><option value="">独立任务</option>${c.state.projects.map(p=>`<option value="${c.esc(p.id)}" ${p.id===task?.projectId?'selected':''}>${c.esc(p.title)}</option>`).join('')}</select></label><p data-err class="form-err" role="alert"></p>
+    <label class="field">关联项目<select name="projectId"><option value="">独立任务</option>${c.state.projects.map(p=>`<option value="${c.esc(p.id)}" ${p.id===(task?.projectId||projectId)?'selected':''}>${c.esc(p.title)}</option>`).join('')}</select></label><p data-err class="form-err" role="alert"></p>
     <div class="actions">${task?'<button type="button" class="btn danger" data-delete>删除任务</button>':''}<button class="btn primary" type="submit">保存任务</button></div></form>`,d=>{
     const form=d.querySelector('form');
     form.onsubmit=e=>{

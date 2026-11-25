@@ -1,3 +1,4 @@
+import {validateLab} from './lab-model.js';
 import {storageKey} from './store.js';
 import {readMedia,writeMedia} from './library.js';
 const repo='J-Xia777/personal-life-os-backup';
@@ -42,6 +43,7 @@ export function unpack(content){
   for(const k of collections){
     if(!Array.isArray(doc.state[k])||doc.state[k].some(i=>!i||typeof i.id!=='string'))throw Error('备份集合异常：'+k);
   }
+  validateLab(doc.state);
   const refs=mediaRefs(doc.state),ids=new Set();
   for(const f of doc.media){
     if(!refs.has(f.id)||ids.has(f.id)||typeof f.data!=='string')throw Error('备份附件索引异常。');

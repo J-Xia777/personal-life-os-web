@@ -7,12 +7,14 @@ function figures(snapshot,date){
 }
 export function renderGuide(c){
   const s=c.state.sijiSnapshot, dates=s?Object.keys(s.byDay).sort().reverse():[];
-  const first=(dates.includes(c.today())?c.today():dates[0])||c.today();
+  const requested=c.params.get('day');
+  const first=dates.includes(requested)?requested:(dates.includes(c.today())?c.today():dates[0])||c.today();
   return `<div class="page-head"><div><h1>使用与数据</h1><p>工作区指南、本机存储与四记连接。</p></div></div>
   <section class="panel guide-panel"><h2>${c.icon('compass')} 开始使用</h2><ol class="guide-steps">
   <li><b>设定方向</b><p>进入「人生总纲 → 新增愿景」，写下想实现的画面，再添加长期目标。</p></li>
   <li><b>安排今天</b><p>在「事业项目」新增项目并关联目标。在项目详情添加任务，或从今日中心选择最多三项主线任务。</p></li>
   <li><b>留下成果</b><p>用「快速记录」写下灵感或日记。晚上进入「成长复盘」，记录完成的作品和下一步。</p></li></ol></section>
+  <section class="panel guide-panel"><h2>${c.icon('activity')} 使用创业实验室</h2><p>先在「机会库」记下问题和目标用户。决定投入后，把机会设为「正式立项」，打开详情并确认「转化为项目」。已有事业项目可以直接加入项目空间。</p><p>在项目里设计一次低成本实验，写下成功标准和时间上限。用「添加任务」排进今日中心，再把访谈原话、付款凭据说明和实验结果带回项目做决定。</p><p>工作台按月汇总进行中项目的经营月报，示例项目从首次填报起计入。实际为零请填 0，空白会显示为待核实。创业记录随文本导出和私有备份一起保存。</p><a class="btn" href="#startup">打开创业实验室</a></section>
   ${cloudPanel()}
   <section class="panel guide-panel"><h2>${c.icon('layers')} 四记数据连接</h2><p>在存有记录的设备和浏览器中打开四记，进入「明细 → 数据安全 → 导出备份」。将 JSON 文件保存在「文件」或传到这台 Mac，然后在下方选择文件。</p>
   <div class="data-flow"><span>四记原始记录</span><i>›</i><span>JSON 备份</span><i>›</i><span>本机每日汇总</span></div>

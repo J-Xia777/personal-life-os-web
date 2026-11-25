@@ -1,3 +1,4 @@
+import {migrateLab} from './lab-model.js';
 import { atlasSeed } from './atlas.js';
 import { librarySeed } from './library.js';
 export const storageKey = 'personal-life-os.workspace.v1';
@@ -31,7 +32,7 @@ export function freshState() {
     ['h-move','舒展身体','伸展一分钟','activity','peach'],
     ['h-music','练习乐器','弹一个和弦','music','lilac']
   ].map(([id,title,minimum,glyph,tone],i) => ({id,title,minimum,glyph,tone,source:'demo',checks:i===0?{[date]:'normal'}:{}}));
-  return {schemaVersion:1,createdAt:new Date().toISOString(),...atlasSeed(date),...librarySeed(date),tasks,habits};
+  return {labRecords:[],schemaVersion:1,createdAt:new Date().toISOString(),...atlasSeed(date),...librarySeed(date),tasks,habits};
 }
 let memory;
 let readError = '';
@@ -40,7 +41,7 @@ function readStored() {
   if (raw === null) return null;
   const obj = JSON.parse(raw);
   if (obj?.schemaVersion !== 1 || !['tasks','habits','projects','visions','entries','notes','trips','reviews'].every(k=>Array.isArray(obj[k]))) throw Error('资料格式无法识别');
-  return obj;
+  return migrateLab(obj);
 }
 export function readState() {
   try {

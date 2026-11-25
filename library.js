@@ -307,6 +307,8 @@ function editor(ctx,kind,previous,category) {
     };
   });
 }
+export function openNote(ctx) { editor(ctx,"note"); }
+export function openLibraryRecord(ctx,kind,id) { detail(ctx,kind,id); }
 export function openEntry(ctx, category='创作灵感') { editor(ctx,'entry',undefined,category); }
 function detailRows(ctx,items) {
   return '<dl class="lib-detail-rows">'+items.filter(([,val])=>val!==undefined&&val!==null&&val!=='').map(([label,val])=>'<div><dt>'+label+'</dt><dd>'+ctx.esc(String(val))+'</dd></div>').join('')+'</dl>';
